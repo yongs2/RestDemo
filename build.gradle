@@ -1,0 +1,87 @@
+// https://weblogs.java.net/blog/manningpubs/archive/2013/03/18/building-java-web-application-gradle
+//
+apply plugin: 'war'
+apply plugin: 'jetty'
+apply plugin: 'maven'
+apply plugin: 'eclipse-wtp'
+
+sourceCompatibility = 1.5
+group = 'com.jwinpartners.demo.rest'
+archiveBaseName = 'RestDemo'
+version = '1.0'
+
+ext {
+	springVersion = '3.2.3.RELEASE'
+}
+
+repositories {
+	flatDir { dirs "lib" }
+    mavenCentral()
+}
+
+eclipse {
+    classpath {
+        defaultOutputDir = file("${buildDir}/classes/main")
+        //default settings for downloading sources and Javadoc:
+		downloadSources = false
+		downloadJavadoc = false
+    }
+}
+
+// Avoid this error :
+// 28-Jul-2014 19:01:04.953 SEVERE [localhost-startStop-13] org.springframework.web.context.ContextLoader.initWebApplicationContext Context initialization failed
+// java.lang.IncompatibleClassChangeError: class org.springframework.core.LocalVariableTableParameterNameDiscoverer$ParameterNameDiscoveringVisitor has interface org.springframework.asm.ClassVisitor as super class
+configurations {
+	runtime.exclude module:'spring-asm'
+}
+
+// https://www.versioneye.com/search?lang=%2C&q=cxf-2.7.6&g=
+// Ref.http://netframework.tistory.com/409
+dependencies {
+    compile 'org.apache.cxf:apache-cxf:2.7.6'
+    compile 'org.codehaus.jackson:jackson-core-lgpl:1.9.11'
+    compile 'org.codehaus.jackson:jackson-mapper-lgpl:1.9.11'
+    compile 'org.codehaus.jackson:jackson-jaxrs:1.9.11'
+    compile 'org.codehaus.jackson:jackson-xc:1.9.11'
+    compile 'org.codehaus.jackson:jackson-smile:1.9.11'
+    compile 'org.codehaus.jackson:jackson-mrbean:1.9.11'
+    compile 'javax.ws.rs:javax.ws.rs-api:2.0-m10'
+    compile 'org.slf4j:jcl-over-slf4j:1.7.5'
+    compile 'org.apache.neethi:neethi:3.0.2'
+    compile 'org.slf4j:slf4j-api:1.7.5'
+    /*
+    compile 'org.springframework:spring-aop:3.2.3.RELEASE'
+    compile ('org.springframework:spring-beans:3.2.3.RELEASE') {
+    	exclude (module: 'spring-asm')
+    }
+    compile ('org.springframework:spring-context:3.2.3.RELEASE') {
+    	exclude (module: 'spring-asm')
+    }
+    compile 'org.springframework:spring-core:3.2.3.RELEASE'
+    compile 'org.springframework:spring-expression:3.2.3.RELEASE'
+    compile ('org.springframework:spring-web:3.2.3.RELEASE') {
+    	exclude (module: 'spring-asm')
+    }
+    */
+    compile (group: 'org.springframework', name: 'spring-core', version: "${ext.springVersion}") {
+    	exclude (module: 'spring-asm')
+    }
+    compile (group: 'org.springframework', name: 'spring-aop', version: "${ext.springVersion}") {
+    	exclude (module: 'spring-asm')
+    }
+    compile (group: 'org.springframework', name: 'spring-beans', version: "${ext.springVersion}") {
+    	exclude (module: 'spring-asm')
+    }
+    compile (group: 'org.springframework', name: 'spring-context', version: "${ext.springVersion}") {
+    	exclude (module: 'spring-asm')
+    }
+    compile (group: 'org.springframework', name: 'spring-web', version: "${ext.springVersion}") {
+    	exclude (module: 'spring-asm')
+    }
+    
+    compile 'wsdl4j:wsdl4j:1.6.3'
+}
+
+war {
+    //webXml = file('src/main/webapp/WEB-INF/web.xml')
+}
